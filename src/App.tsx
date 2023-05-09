@@ -12,7 +12,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Routes>
-        <Route path="/" element={<Common />}>
+        <Route path="/deb-ounce/" element={<Common />}>
           <Route index element={<Index />} />
           <Route path="*" element={<NotFound />} />
         </Route>
