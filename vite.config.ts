@@ -5,5 +5,6 @@ import eslintPlugin from '@nabla/vite-plugin-eslint';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "/deb-ounce/",
   plugins: [react(), eslintPlugin (), tsconfigPaths()],
 });
