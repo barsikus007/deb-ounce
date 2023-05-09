@@ -25,6 +25,7 @@ module.exports = {
     'import/no-absolute-path': 'off',
 
     // other fixes
+    'import/no-extraneous-dependencies': ['off'], // @tanstack/react-virtual
     'react-refresh/only-export-components': 'warn', // vite initial rule
     'react/prop-types': ['warn', { skipUndeclared: true }], // skip props validation error
     // TODO test 'react/jsx-uses-react': 'off', // plugin:react/jsx-runtime wont work in vscode

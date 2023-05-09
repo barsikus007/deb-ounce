@@ -7,4 +7,10 @@ import eslintPlugin from '@nabla/vite-plugin-eslint';
 export default defineConfig({
   base: "/deb-ounce/",
   plugins: [react(), eslintPlugin (), tsconfigPaths()],
+  resolve: {
+    alias: {
+      react: 'preact/compat',
+      'react-dom': 'preact/compat'
+    },
+  }
 });
