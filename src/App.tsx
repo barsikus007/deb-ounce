@@ -1,17 +1,18 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import type { Component } from 'solid-js';
+import { QueryClient, QueryClientProvider } from '@tanstack/solid-query';
+import { SolidQueryDevtools } from '@tanstack/solid-query-devtools';
 
-import Index from 'pages/Index';
+import Index from './pages/Index';
 
 const queryClient = new QueryClient();
 
-function App() {
+const App: Component = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <Index />
-      <ReactQueryDevtools />
+      <SolidQueryDevtools />
     </QueryClientProvider>
   );
-}
+};
 
 export default App;

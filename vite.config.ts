@@ -1,16 +1,21 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react-swc';
-import tsconfigPaths from 'vite-tsconfig-paths';
-import eslintPlugin from '@nabla/vite-plugin-eslint';
+import solidPlugin from 'vite-plugin-solid';
+// import devtools from 'solid-devtools/vite';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  base: "/deb-ounce/",
-  plugins: [react(), eslintPlugin (), tsconfigPaths()],
-  resolve: {
-    alias: {
-      react: 'preact/compat',
-      'react-dom': 'preact/compat'
-    },
-  }
+  base: '/deb-ounce/',
+  plugins: [
+    /*
+    Uncomment the following line to enable solid-devtools.
+    For more info see https://github.com/thetarnav/solid-devtools/tree/main/packages/extension#readme
+    */
+    // devtools(),
+    solidPlugin(),
+  ],
+  server: {
+    port: 3000,
+  },
+  build: {
+    target: 'esnext',
+  },
 });

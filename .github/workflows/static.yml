@@ -4,7 +4,7 @@ name: Deploy static content to Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ['master']
+    branches: ['blazing-slow']
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -30,19 +30,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Pnpm install
-        uses: pnpm/action-setup@v2
+      - name: Bun install
+        uses: oven-sh/setup-bun@v1
         with:
-          version: 8
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'pnpm'
+          bun-version: latest
       - name: Install dependencies
-        run: pnpm install
+        run: bun install
       - name: Build
-        run: pnpm build
+        run: bun run build
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact

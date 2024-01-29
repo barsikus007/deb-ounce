@@ -1,0 +1,8 @@
+services:
+  deb-ounce:
+    image: deb-ounce-prod
+    build:
+      context: .
+      target: serve
+    ports:
+      - 80:80

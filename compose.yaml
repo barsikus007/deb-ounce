@@ -1,0 +1,10 @@
+services:
+  deb-ounce:
+    image: deb-ounce-dev
+    build:
+      context: .
+      target: development
+    ports:
+      - 3000:3000
+    volumes:
+      - ./src/:/app/src/

@@ -1,12 +1,5 @@
-# pin version to prevent side-effects when new version releases
-# ARG NODE_VERSION=20.11.0
-ARG NODE_VERSION=lts
-FROM node:${NODE_VERSION}-alpine as installer
-ARG USER=node
-ARG PNPM_VERSION=latest
-
-RUN corepack enable && \
-    corepack prepare pnpm@${PNPM_VERSION} --activate
+FROM oven/bun:alpine as installer
+ARG USER=bun
 
 USER $USER
 WORKDIR /app
@@ -17,24 +10,23 @@ WORKDIR /app
 # Leverage a bind mounts to package.json and pnpm-lock.yaml to avoid having to copy them into
 # into this layer.
 RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=pnpm-lock.yaml,target=pnpm-lock.yaml \
-    --mount=type=cache,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile
+    --mount=type=bind,source=bun.lockb,target=bun.lockb \
+    --mount=type=cache,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile
 
-COPY --chown=$USER public/ public/
-COPY --chown=$USER package.json pnpm-lock.yaml index.html .eslintrc.cjs vite.config.ts tsconfig.json tsconfig.node.json ./
+COPY --chown=$USER package.json bun.lockb index.html .eslintrc.cjs .eslintignore vite.config.ts tsconfig.json ./
 
 
 FROM installer as development
 
-EXPOSE 5173
-CMD ["pnpm", "dev", "--host"]
+EXPOSE 3000
+CMD ["bun", "dev", "--host"]
 
 
 FROM installer as builder
 
 COPY src/ src/
-RUN pnpm build
+RUN bun run build
 
 
 FROM nginx:stable-alpine as serve
