@@ -1,7 +1,6 @@
-// @ts-nocheck
 import { useRef, useState } from 'react';
-import { useQuery } from 'react-query';
 import styled from '@emotion/styled';
+import { useQuery } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 const Center = styled.div`
@@ -16,7 +15,7 @@ const SideBar = styled.div`
   width: 250px;
 `;
 
-const UserNickName = styled.div`
+const UserNickName = styled.div<{ selected: boolean }>`
   cursor: pointer;
   color: ${props => (props.selected ? 'hotpink' : 'turquoise')};
 `;
@@ -30,8 +29,10 @@ const CancelLabel = styled.label`
   color: teal;
 `;
 
-const varFetch = async ({ chelId, signal }) => {
-  const response = await fetch(`https://reactor.kinsle.ru/users/${chelId}`, { signal });
+const API_URL = 'https://reactor.kinsle.ru';
+
+const varFetch = async ({ chelId, signal }: { chelId: string; signal: AbortSignal | undefined }) => {
+  const response = await fetch(`${API_URL}/users/${chelId}`, { signal });
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
@@ -39,28 +40,27 @@ const varFetch = async ({ chelId, signal }) => {
 };
 
 function Index() {
-  const parentRef = useRef();
-  const [chelId, setChelId] = useState();
+  const parentRef = useRef<HTMLDivElement>(null);
+  const [chelId, setChelId] = useState('');
   const [cancelQuery, setCancelQuery] = useState(true);
 
-  const {
-    isLoading, data: usersData,
-  } = useQuery('users', async () => {
-    const response = await fetch('https://reactor.kinsle.ru/users');
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  });
-  const {
-    isLoading: isUserLoading, data: userData,
-  } = useQuery(
-    ['user', chelId],
-    cancelQuery ? async ({ signal }) => varFetch({ chelId, signal }) : async () => varFetch({ chelId }),
-    {
-      enabled: !!chelId,
+  const { isLoading, data: usersData } = useQuery({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const response = await fetch(`${API_URL}/users`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
     },
-  );
+  });
+  const { isLoading: isUserLoading, data: userData } = useQuery({
+    queryKey: ['user', chelId],
+    queryFn: cancelQuery
+      ? async ({ signal }) => varFetch({ chelId, signal })
+      : async () => varFetch({ chelId, signal: undefined }),
+    enabled: !!chelId,
+  });
 
   const rowVirtualizer = useVirtualizer({
     count: usersData?.length || 0,
@@ -69,55 +69,51 @@ function Index() {
     overscan: 10,
   });
 
-  const changeChel = cchelId => {
+  const changeChel = (cchelId: string) => {
     setChelId(cchelId);
   };
 
   return (
     <Center>
-      {isLoading ? 'loading' : (
-        <SideBar
-          ref={parentRef}
-        >
+      <SideBar ref={parentRef}>
+        <CancelLabel>
+          Cancel query when unmount
+          <input type="checkbox" checked={cancelQuery} onChange={() => setCancelQuery(!cancelQuery)} />
+        </CancelLabel>
+        <hr />
+        {isLoading ? (
+          'loading'
+        ) : (
           <div
             style={{
               height: `${rowVirtualizer.getTotalSize()}px`,
               position: 'relative',
             }}
           >
-            {rowVirtualizer.getVirtualItems().map(
-              virtualRow => {
-                const chel = usersData[virtualRow.index];
-                return (
-                  <UserNickName
-                    selected={chelId === chel.id}
-                    key={chel.id}
-                    onClick={() => changeChel(chel.id)}
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      height: `${virtualRow.size}px`,
-                      transform: `translateY(${virtualRow.start}px)`,
-                    }}
-                  >
-                    {chel.username}
-                  </UserNickName>
-                );
-              },
-            )}
+            {rowVirtualizer.getVirtualItems().map(virtualRow => {
+              const chel = usersData[virtualRow.index];
+              return (
+                <UserNickName
+                  selected={chelId === chel.id}
+                  key={chel.id}
+                  onClick={() => changeChel(chel.id)}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  {chel.username}
+                </UserNickName>
+              );
+            })}
           </div>
-        </SideBar>
-      )}
-      <UserInfo>
-        <CancelLabel>
-          Cancel query when unmount
-          <input type="checkbox" checked={cancelQuery} onChange={() => setCancelQuery(!cancelQuery)} />
-        </CancelLabel>
-        <br />
-        {isUserLoading ? 'chel-loading' : (
-          JSON.stringify(userData, null, 2)?.slice(2, -1)
         )}
+      </SideBar>
+      <UserInfo>
+        {isUserLoading ? 'chel-loading' : JSON.stringify(userData, null, 2)?.slice(2, -1)}
       </UserInfo>
     </Center>
   );
