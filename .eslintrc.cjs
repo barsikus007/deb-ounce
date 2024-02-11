@@ -6,6 +6,7 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:react/recommended',
     'airbnb',
+    'prettier',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module', ecmaFeatures: { jsx: true } },
@@ -33,14 +34,6 @@ module.exports = {
     'react/jsx-props-no-spreading': 'off', // spreading is useful
     'jsx-a11y/label-has-associated-control': 'off', // turned off due to modern label syntax wont work
     'arrow-parens': ['error', 'as-needed'], // e => { e.doSmth() }
-    'max-len': ['warn', {
-      code: 120,
-      ignoreComments: true,
-      ignoreTrailingComments: true,
-      ignoreStrings: true,
-      ignoreTemplateLiterals: true,
-      ignoreRegExpLiterals: true,
-    }],
   },
   settings: {
     'import/resolver': {

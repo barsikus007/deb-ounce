@@ -12,6 +12,10 @@
   "license": "MIT",
   "devDependencies": {
     "@tanstack/solid-query-devtools": "^5.17.21",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
+    "prettier-eslint": "^16.3.0",
     "solid-devtools": "^0.29.2",
     "typescript": "^5.3.3",
     "vite": "^5.0.11",
